@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receive Table</title>
+    <script src="https://cdn.jsdelivr.net/npm/fflate/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/base91/base91.js/base91.js"></script>
+</head>
+<body>
+    <div id="tableContainer"></div>
+
+    <script>
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[$$]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        var encodedTable = getParameterByName('table');
+        var binaryData = base91.decode(encodedTable);
+        var decompressedData = fflate.strFromU8(binaryData);
+        document.getElementById('tableContainer').innerHTML = decompressedData;
+    </script>
+</body>
+</html>
