@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Send Table with Customization</title>
-    <script src="https://cdn.jsdelivr.net/npm/fflate/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/base91@0.0.5/lib/base91.min.js"></script>
     <style>
         #container {
@@ -37,7 +37,7 @@
 
         function sendTable() {
             var table = document.getElementById('tableInput').value;
-            var compressed = fflate.strToU8(table);
+            var compressed = pako.gzip(table);
             var encodedTable = base91.encode(compressed);
             window.location.href = 'receive2.html?table=' + encodeURIComponent(encodedTable);
         }

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Receive Table</title>
-    <script src="https://cdn.jsdelivr.net/npm/fflate/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/base91@0.0.5/lib/base91.min.js"></script>
 </head>
 <body>
@@ -20,7 +20,7 @@
 
         var encodedTable = getParameterByName('table');
         var binaryData = base91.decode(encodedTable);
-        var decompressedData = fflate.strFromU8(binaryData);
+        var decompressedData = pako.ungzip(binaryData, { to: 'string' });
         document.getElementById('tableContainer').innerHTML = decompressedData;
     </script>
 </body>
