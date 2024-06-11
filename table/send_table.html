@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Table with Customization</title>
+    <script src="https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js"></script>
+    <style>
+        #container {
+            display: flex;
+        }
+        #inputArea, #outputArea {
+            width: 50%;
+            padding: 10px;
+        }
+        #inputArea textarea {
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="inputArea">
+            <textarea id="tableInput" oninput="updateTable()"></textarea>
+            <button onclick="sendTable()">Send Table</button>
+        </div>
+        <div id="outputArea">
+            <div id="tablePreview"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateTable() {
+            var tableCode = document.getElementById('tableInput').value;
+            document.getElementById('tablePreview').innerHTML = tableCode;
+        }
+
+        function sendTable() {
+            var table = document.getElementById('tableInput').value;
+            var compressed = pako.gzip(table);
+            var encodedTable = btoa(String.fromCharCode.apply(null, compressed));
+            window.location.href = 'receive.html?table=' + encodeURIComponent(encodedTable);
+        }
+    </script>
+</body>
+</html>

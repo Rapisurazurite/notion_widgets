@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receive Table</title>
+</head>
+<body>
+    <div id="tableContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js"></script>
+    <script>
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[$$]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        var encodedTable = getParameterByName('table');
+        var binaryString = atob(decodeURIComponent(encodedTable));
+        var charData = binaryString.split('').map(function(x){return x.charCodeAt(0);});
+        var compressedData = new Uint8Array(charData);
+        var decompressedData = pako.inflate(compressedData, { to: 'string' });
+        document.getElementById('tableContainer').innerHTML = decompressedData;
+    </script>
+</body>
+</html>
