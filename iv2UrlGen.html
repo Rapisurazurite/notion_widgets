@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .input-group {
+            margin-bottom: 10px;
+        }
+        .header-item {
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+        input[type="text"] {
+            padding: 5px;
+        }
+        .header-name {
+            width: 150px;
+        }
+        .header-value {
+            width: 250px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            word-wrap: break-word;
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+            white-space: nowrap;
+        }
+        .full-width {
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h2>URL Builder</h2>
+    
+    <div class="input-group">
+        <label>Original URL:</label>
+        <input type="text" id="originalUrl" class="full-width" placeholder="Enter URL" oninput="updateResult()">
+    </div>
+
+    <div class="input-group">
+        <label>Cookie:</label>
+        <input type="text" id="cookie" class="full-width" placeholder="Enter cookie" oninput="updateResult()">
+    </div>
+
+    <div id="headers">
+        <div style="display: flex; align-items: center;">
+            <h3 style="margin-right: 10px;">Headers:</h3>
+            <button onclick="addHeader()">Add Header</button>
+        </div>
+    </div>
+
+    <div id="result">
+        Generated URL will appear here
+    </div>
+
+    <script>
+        function addHeader() {
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'header-item';
+            headerDiv.innerHTML = `
+                <input type="text" placeholder="Header name" class="header-name" oninput="updateResult()">
+                <input type="text" placeholder="Header value" class="header-value" oninput="updateResult()">
+                <button onclick="this.parentElement.remove(); updateResult()">Remove</button>
+            `;
+            document.getElementById('headers').appendChild(headerDiv);
+        }
+
+        function base64Encode(str) {
+            return btoa(str);
+        }
+
+        function parseURL(url) {
+            try {
+                const urlObj = new URL(url);
+                return {
+                    baseUrl: urlObj.origin + urlObj.pathname,
+                    searchParams: urlObj.search
+                };
+            } catch (e) {
+                return {
+                    baseUrl: url,
+                    searchParams: ''
+                };
+            }
+        }
+
+        function updateResult() {
+            const originalUrl = document.getElementById('originalUrl').value.trim();
+            if (!originalUrl) {
+                document.getElementById('result').textContent = 'Please enter a URL';
+                return;
+            }
+
+            // Parse the original URL to separate base URL and GET parameters
+            const parsedUrl = parseURL(originalUrl);
+            let result = 'https://iv2.lazurite.top/proxy/' + parsedUrl.baseUrl;
+
+            // Collect headers
+            const headerItems = document.querySelectorAll('.header-item');
+            const headers = [];
+            headerItems.forEach(item => {
+                const name = item.querySelector('.header-name').value.trim();
+                const value = item.querySelector('.header-value').value.trim();
+                if (name && value) {
+                    headers.push(`${name}=${value}`);
+                }
+            });
+
+            // Add cookie
+            const cookie = document.getElementById('cookie').value.trim();
+            
+            // Build the extra parts
+            let extraParts = [];
+            if (headers.length > 0) {
+                extraParts.push(headers.join(','));
+            }
+            if (cookie) {
+                extraParts.push(`cookie=${base64Encode(cookie)}`);
+            }
+
+            // Add extra parts if they exist
+            if (extraParts.length > 0) {
+                result += ':' + extraParts.join(',');
+            }
+
+            // Add original GET parameters if they exist
+            if (parsedUrl.searchParams) {
+                result += parsedUrl.searchParams;
+            }
+
+            document.getElementById('result').textContent = result;
+        }
+    </script>
+</body>
+</html>
